@@ -9,6 +9,8 @@ import org.apache.kafka.clients.producer.Partitioner;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.Cluster;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class RoundRobinProducerExample {
 	public static void main(String[] args) throws Exception {
@@ -28,13 +30,57 @@ public class RoundRobinProducerExample {
 		props.put("partitioner.class", RoundRobinPartitioner.class.getName());
 
 		Producer<String, String> producer = new KafkaProducer<String, String>(props);
-
-		for (int i = 0; i < 10; i++) {
+		
+		ProducerRecord<String, String> message;
+		
+		//추가한 코드
+		String subway = "1호선";
+		int Number = 10;
+		
+		JsonMain jsonA = new JsonMain();
+		
+		JSONObject jsonSubwayCode = jsonA.JsonSubwayCode(subway, Number);
+		
+		String code = jsonSubwayCode.get("code").toString();
+		message = new ProducerRecord<String, String>("test", "code",code);
+		System.out.println(message);
+		Thread.sleep(100);
+		producer.send(message);
+		
+		String messageSubway = jsonSubwayCode.get("message").toString();
+		message = new ProducerRecord<String, String>("test", "message",messageSubway);
+		System.out.println(message);
+		Thread.sleep(100);
+		producer.send(message);
+		
+		if(code.equals("INFO-000")){
+			JSONArray jsonSubwayList = jsonA.JsonSubwayList(subway, Number);
+			
+			for(int i = 0 ; i < jsonSubwayList.size(); i++){
+				JSONObject entity = (JSONObject)jsonSubwayList.get(i);
+	
+				String trainNo = entity.get("trainNo").toString();
+				message = new ProducerRecord<String, String>("test", i+"_trainNo",trainNo);
+				System.out.println(message);
+				Thread.sleep(100);
+				producer.send(message);
+				
+				String statnTnm = entity.get("statnTnm").toString();
+				message = new ProducerRecord<String, String>("test", i+"_statnTnm",statnTnm);
+				System.out.println(message);
+				Thread.sleep(100);
+				producer.send(message);
+	
+			}
+		}
+		
+		
+		/*for (int i = 0; i < 10; i++) {
 			ProducerRecord<String, String> message = new ProducerRecord<String, String>("test", i + "", i + " Hello, World!");
 			producer.send(message);
 		}
 
-		producer.close();
+		producer.close();*/
 	}
 
 	public static class RoundRobinPartitioner implements Partitioner {
