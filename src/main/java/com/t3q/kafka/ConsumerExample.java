@@ -7,6 +7,8 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.t3q.kafka.RoundRobinProducerExample.RoundRobinPartitioner;
+
 import kafka.consumer.Consumer;
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.KafkaStream;
@@ -30,6 +32,9 @@ public class ConsumerExample {
 		Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCountMap);
 		List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(TOPIC);
 		ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+		
+		System.out.println("streams : "+streams);
+		
 		for (final KafkaStream<byte[], byte[]> stream : streams) {
 			executor.execute(new Runnable() {
 				@Override

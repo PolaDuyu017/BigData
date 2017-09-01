@@ -13,7 +13,7 @@ import org.apache.kafka.common.Cluster;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-public class RoundRobinProducerExample {
+public class RoundRobinProducerRealTimeSubway {
 	public static void main(String[] args) throws Exception {
 		Properties props = new Properties();
 
@@ -32,11 +32,29 @@ public class RoundRobinProducerExample {
 		
 		Producer<String, String> producer = new KafkaProducer<String, String>(props);
 		
-		for(int i=0;  i<100; i++){
-			ProducerRecord<String, String> message = new ProducerRecord<String, String>("test", i+"",i+" Hello, World!");
+		ProducerRecord<String, String> message;
+		
+		//추가코드
+		JsonRealtimeSubway jsonA = new JsonRealtimeSubway();
+		
+		for(int i = 0; i<jsonA.subwayArray.length; i++) {
+			if(!jsonA.subwayArray[i][0].equals("인천")){
+				JSONObject jsonSubway = jsonA.JsonSubway(jsonA.subwayArray[i][0], jsonA.subwayArray[i][1], jsonA.Number);
+				
+				String id = jsonSubway.get("id").toString();
+				
+				String code = jsonSubway.toString();
+				message = new ProducerRecord<String, String>("test", id,code);
+				/*System.out.println(message);*/
+				producer.send(message);
+			}
+		}
+		
+		/*for(int i=0;  i<100; i++){
+			message = new ProducerRecord<String, String>("test", i+"",i+" Hello, World!");
 			Thread.sleep(100);
 			producer.send(message);
-		}
+		}*/
 		
 		producer.close();
 	}

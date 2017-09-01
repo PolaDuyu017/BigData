@@ -20,8 +20,6 @@ public class JsonMain {
         
         JSONArray arraySubway = (JSONArray)jsonobject.get("realtimePositionList");
         
-        
-        
         return arraySubway;
 	}
 	
@@ -44,8 +42,6 @@ public class JsonMain {
         }
         
 	}
-	
-	
 	
 	//URL에서 json으로 받아오는 로직
 	private static String readUrl(String subwayName, int No) throws Exception {
